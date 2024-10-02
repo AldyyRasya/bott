@@ -8,6 +8,7 @@
 require('./config')
 const { BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, proto, generateWAMessageContent, generateWAMessage, prepareWAMessageMedia, areJidsSameUser, getContentType } = require('@whiskeysockets/baileys')
 const axios = require('axios')
+const https = require('https');
 const FileType = require('file-type')
 const fetch = require('node-fetch')
 const crypto = require('crypto')
@@ -21,7 +22,7 @@ const util = require('util')
 const chalk = require('chalk')
 const moment = require('moment-timezone');
 const { clockString, getTime, isUrl, sleep, runtime, fetchJson, getBuffer, jsonformat, reSize, generateProfilePicture, getRandom } = require('./lib/myfunc')
-const jam = moment.tz('asia/makassar').format('HH:mm:ss')
+const jam = moment.tz('Asia/Jakarta').format('HH:mm:ss')
 const ms = toMs = require('ms');
 const { color, bgcolor } = require('./lib/color')
 const { getHarga } = require('./SETTING/GET_API/getHarga')
@@ -3397,6 +3398,38 @@ case 'delprem': {
     reply(`Berhasil menghapus nomor ${siapa} dari daftar premium.`);
 }
 break;
+
+case 'cekmyip': {
+  const url = 'https://api.myip.com';
+    
+    https.get(url, (res) => {
+        let data = '';
+
+        // Mengumpulkan data dari stream
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // Ketika semua data sudah diterima
+        res.on('end', () => {
+            try {
+                // Parse data ke dalam JSON
+                const ipInfo = JSON.parse(data);
+                console.log('Informasi IP Anda:');
+                console.log(`IP Address: ${ipInfo.ip}`);
+                console.log(`Negara: ${ipInfo.country}`);
+                console.log(`Kode Negara: ${ipInfo.cc}`);
+            } catch (err) {
+                console.error('Error parsing data:', err.message);
+            }
+        });
+
+    }).on('error', (err) => {
+        console.error('Error making request:', err.message);
+    });
+}
+        break
+        
 case 'addprem': {
     if (!isOwner) return reply(mess.wait)
     let siapa = args[0];
